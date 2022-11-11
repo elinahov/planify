@@ -18,8 +18,12 @@ import Input from '../../../components/Input';
 import Title from '../../../components/Title';
 import {categories} from '../../../constants/categories';
 import styles from './styles';
+import {useDispatch, useSelector} from 'react-redux';
+import {setToUpdate} from '../../../store/tasks';
 
 const AddTask = ({navigation}) => {
+  const user = useSelector(state => state.user.data);
+  const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState();
   const [deadline, setDeadline] = useState(new Date());
@@ -44,14 +48,16 @@ const AddTask = ({navigation}) => {
     setLoading(true);
     firestore()
       .collection('Tasks')
-      .doc('ABC')
-      .set({
+      .add({
         title,
         deadline,
         category,
+        checked: false,
+        userId: user?.uid,
       })
       .then(() => {
         setLoading(false);
+        dispatch(setToUpdate());
         navigation.navigate('Tasks');
         setTitle('');
         setDeadline(new Date());
