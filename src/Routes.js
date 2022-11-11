@@ -1,21 +1,28 @@
 import 'react-native-gesture-handler';
 import React, {useEffect, useState} from 'react';
-import {Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import auth from '@react-native-firebase/auth';
+import {Image, StyleSheet} from 'react-native';
 
 import Onboarding from './screens/auth/Onboarding';
 import Signin from './screens/auth/Signin';
 import Signup from './screens/auth/Signup';
+import Home from './screens/app/Home';
+import Tasks from './screens/app/Tasks';
+import AddTask from './screens/app/AddTask';
+import DrawerContent from './components/DrawerContent';
 
 const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
+const Tab = createBottomTabNavigator();
 
 const Routes = () => {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
 
-  console.log('user :>> ', user);
   // Handle user state changes
   function onAuthStateChanged(user) {
     setUser(user);
@@ -33,19 +40,51 @@ const Routes = () => {
     return null;
   }
 
+  const Tabs = () => (
+    <Tab.Navigator screenOptions={{tabBarShowLabel: false, headerShown: false}}>
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <Image
+              style={styles.icon}
+              source={
+                focused
+                  ? require('./assets/home_active.png')
+                  : require('./assets/home_inactive.png')
+              }
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Tasks"
+        component={Tasks}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <Image
+              style={styles.icon}
+              source={
+                focused
+                  ? require('./assets/calendar_active.png')
+                  : require('./assets/calendar_inactive.png')
+              }
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+
   if (user) {
-    const logout = () => {
-      auth()
-        .signOut()
-        .then(() => console.log('User signed out!'));
-    };
     return (
-      <>
-        <Text style={{margin: 40}}>Welcome</Text>
-        <Text onPress={logout} style={{margin: 40}}>
-          Log out
-        </Text>
-      </>
+      <Drawer.Navigator
+        screenOptions={{headerShown: false}}
+        drawerContent={props => <DrawerContent {...props} />}>
+        <Drawer.Screen name="Tabs" component={Tabs} />
+        <Drawer.Screen name="AddTask" component={AddTask} />
+      </Drawer.Navigator>
     );
   }
 
@@ -57,5 +96,12 @@ const Routes = () => {
     </Stack.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  icon: {
+    width: 24,
+    height: 24,
+  },
+});
 
 export default React.memo(Routes);
