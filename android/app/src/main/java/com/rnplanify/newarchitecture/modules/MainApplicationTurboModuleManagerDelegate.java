@@ -1,4 +1,4 @@
-package com.planify.newarchitecture.modules;
+package com.rnplanify.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

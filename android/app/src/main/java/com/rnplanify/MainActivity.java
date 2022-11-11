@@ -1,4 +1,4 @@
-package com.planify;
+package com.rnplanify;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
